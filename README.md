@@ -1,4 +1,4 @@
-## Dota 2 pro matches parsing
+## Dota 2 pro matches parsing with python 
 ### With python 3 and MongoDB
 - pro_matches_id_loader notebook is for obtaining id of pro matches from the API opendota
 - pro_matches_loader serves for obtaining full matches data by id from the API opendota
