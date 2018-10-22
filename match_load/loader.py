@@ -2,7 +2,6 @@ import numpy as np
 from bs4 import BeautifulSoup
 import urllib3
 from threading import Thread, current_thread
-from multiprocessing.dummy import Pool as TPool
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 import json
