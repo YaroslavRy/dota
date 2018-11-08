@@ -139,5 +139,5 @@ class MatchLoader():
 
 
 loader = MatchLoader()
-# loader.update_ids(last_id=99999999999)
+loader.update_ids(last_id=99999999999)
 loader.load_new_matches(16)
