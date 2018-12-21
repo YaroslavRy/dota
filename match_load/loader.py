@@ -61,9 +61,9 @@ class MatchLoader():
         matches = json.loads(r.data)
         return matches
 
-    def update_ids(self, last_id):
+    def update_ids(self, last_id, n_first_pages):
         cur_prx = self.get_working_proxy()
-        for i in range(1000):
+        for i in range(n_first_pages):
             total_matches = self.pro_matches_id.count()
             print(i, total_matches, last_id)
             try:
@@ -128,16 +128,18 @@ class MatchLoader():
         if len(new_ids) > 0:
             while len(new_ids) % n_batches != 0:
                 new_ids = np.append(new_ids, 0)
+
             batches = np.split(new_ids, n_batches)
             threads = []
             print('threads appending')
             for batch in batches:
                 threads.append(Thread(target=self.load_insert, args=(batch,)))
+
             print('threads starting')
             for t in threads:
                 t.start()
 
 
 loader = MatchLoader()
-loader.update_ids(last_id=99999999999)
+loader.update_ids(last_id=99999999999, n_first_pages=10)
 loader.load_new_matches(16)
