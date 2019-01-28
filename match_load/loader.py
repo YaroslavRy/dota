@@ -124,7 +124,7 @@ class MatchLoader():
     def load_new_matches(self, n_batches):
         # get new ids
         new_ids = self.get_new_ids()
-        print(len(new_ids))
+        print(len(new_ids), 'New ids found')
         if len(new_ids) > 0:
             while len(new_ids) % n_batches != 0:
                 new_ids = np.append(new_ids, 0)
@@ -142,4 +142,4 @@ class MatchLoader():
 
 loader = MatchLoader()
 loader.update_ids(last_id=99999999999, n_first_pages=10)
-loader.load_new_matches(16)
+loader.load_new_matches(8)
