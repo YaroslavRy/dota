@@ -35,9 +35,9 @@ class MatchLoader():
 
         proxies_list = proxies_list[:100]
         np.random.shuffle(proxies_list)
+        print('Getting working proxy...')
         for i, prx in enumerate(proxies_list):
             try:
-                print('Getting working proxy...')
                 cur_prx_address = 'https://' + str(prx[0]) + '/'
                 prx_http = urllib3.ProxyManager(cur_prx_address,
                                                 maxsize=1,
@@ -122,7 +122,6 @@ class MatchLoader():
             time.sleep(0)
 
     def load_new_matches(self, n_batches):
-        # get new ids
         new_ids = self.get_new_ids()
         print(len(new_ids), 'New ids found')
         if len(new_ids) > 0:
@@ -142,4 +141,4 @@ class MatchLoader():
 
 loader = MatchLoader()
 loader.update_ids(last_id=99999999999, n_first_pages=10)
-loader.load_new_matches(8)
+loader.load_new_matches(n_batches=24)
