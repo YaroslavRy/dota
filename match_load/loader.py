@@ -64,7 +64,8 @@ class MatchLoader():
     def update_ids(self, last_id, n_first_pages):
         cur_prx = self.get_working_proxy()
         for i in range(n_first_pages):
-            total_matches = self.pro_matches_id.count()
+            if i % 50 == 0:
+                total_matches = self.pro_matches_id.count()
             print(i, total_matches, last_id)
             try:
                 cur_matches = self.api_pro_matches_id(cur_prx, start_id=last_id)
