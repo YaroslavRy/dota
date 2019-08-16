@@ -1,5 +1,6 @@
 import json
 import time
+from json import JSONDecodeError
 from threading import Thread, current_thread
 
 import numpy as np
@@ -7,7 +8,6 @@ import urllib3
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from json import JSONDecodeError
 
 
 class MatchLoader():
@@ -30,13 +30,11 @@ class MatchLoader():
     def get_working_proxy(self, top_n=25):
         user_agent = np.random.choice(self.user_agent, size=1)[0]
         proxy_list_site = 'https://free-proxy-list.net/'
-        pm = urllib3.PoolManager(1,
-                                 headers=user_agent,
-                                 cert_reqs='CERT_REQUIRED')
+        pm = urllib3.PoolManager(1, headers=user_agent, cert_reqs='CERT_REQUIRED')
         prx_req = pm.request('GET', proxy_list_site)
         prx_soup = BeautifulSoup(prx_req.data, 'html.parser')
         proxies_list = []
-        for tr in prx_soup.find_all('tr'):
+        for tr in prx_soup.find_all('tr')[:top_n]:
             tmp = []
             for td in tr.find_all('td')[:2]:
                 tmp.append(td.text)
@@ -74,6 +72,7 @@ class MatchLoader():
         return matches
 
     def update_ids(self, last_id, n_first_pages):
+        old_ids = [x['match_id'] for x in self.pro_matches_id.find({}, {'match_id'})]
         cur_prx = None
         while cur_prx is None:
             cur_prx = self.get_working_proxy()
@@ -89,11 +88,20 @@ class MatchLoader():
                         cur_prx = self.get_working_proxy()
                     continue
                 ids = [x['match_id'] for x in cur_matches if 'match_id' in x]
-                last_id = np.min(ids)
-                self.pro_matches_id.insert(cur_matches)
+                duplicate_ids = np.intersect1d(ids, old_ids)
+                cur_matches = [cur_matches[x['match_id']] for x in cur_matches if
+                               x['match_id'] not in duplicate_ids]
+                if len(cur_matches) > 0:
+                    self.pro_matches_id.insert(cur_matches)
+                    last_id = np.min(ids)
+                print('skipped')
+                last_id = np.min(duplicate_ids)
             except DuplicateKeyError as de:
                 continue
             except JSONDecodeError as jsnerr:
+                cur_prx = None
+                while cur_prx is None:
+                    cur_prx = self.get_working_proxy()
                 continue
             except Exception as err:
                 print('update_ids: \n', err, sep='')
@@ -125,7 +133,6 @@ class MatchLoader():
         return need_to_load_ids
 
     def load_insert(self, matches_ids):
-        prx_address
         prx_address = self.get_working_proxy()
         for i, cur_match_id in enumerate(matches_ids):
             print(current_thread().name, i, cur_match_id) if i % 10 == 0 else None
