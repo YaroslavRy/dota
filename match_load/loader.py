@@ -32,9 +32,8 @@ class MatchLoader():
         proxy_list_site2 = 'https://hidemy.name/en/proxy-list/'
         pm = urllib3.PoolManager(1, headers=user_agent, cert_reqs='CERT_REQUIRED')
         prx_req = pm.request('GET', proxy_list_site)
-        prx_req2 = pm.request('GET', proxy_list_site2)
         prx_soup = BeautifulSoup(prx_req.data, 'html.parser')
-        prx_soup2 = BeautifulSoup(prx_req2.data, 'html.parser')
+
         proxies_list = []
 
         for tr in prx_soup.find_all('tr')[:top_n]:
@@ -46,10 +45,14 @@ class MatchLoader():
             cur_prx = str(tmp[0]) + ':' + tmp[1]
             proxies_list.append(cur_prx)
 
-        for i, elem in enumerate(prx_soup2.find_all(class_='d')[:top_n]):
-            addr, port = [x.text for x in elem.find_all('td')[:2]]
-            cur_full_prx = addr + ':' + port
-            proxies_list.append(cur_full_prx)
+        prx_req2 = pm.request('GET', proxy_list_site2)
+        print('req2 status:', prx_req2.status)
+        if prx_req2.status != 403:
+            prx_soup2 = BeautifulSoup(prx_req2.data, 'html.parser')
+            for i, elem in enumerate(prx_soup2.find_all(class_='d')[:top_n]):
+                addr, port = [x.text for x in elem.find_all('td')[:2]]
+                cur_full_prx = addr + ':' + port
+                proxies_list.append(cur_full_prx)
 
         proxies_list = proxies_list[:top_n]
         np.random.shuffle(proxies_list)
@@ -151,7 +154,9 @@ class MatchLoader():
                 print('DuplicateKeyError')
                 continue
             except Exception as e:
-                prx_address = self.get_working_proxy()
+                prx_address = None  
+                while prx_address is None:
+                    prx_address = self.get_working_proxy()
                 print('load_insert \n', e, cur_match_id)
             time.sleep(0.1)
 
