@@ -130,9 +130,7 @@ class MatchLoader():
         ids_all = [x['match_id'] for x in self.pro_matches_id.find({}, {'match_id'})]
         ids_stored = [x['match_id'] for x in self.pro_matches.find({}, {'match_id'})]
         need_to_load_ids_bool = np.isin(ids_all, ids_stored, invert=True)
-        need_to_load_ids = np.array(
-
-        )[need_to_load_ids_bool]
+        need_to_load_ids = np.array(ids_all)[need_to_load_ids_bool]
         return need_to_load_ids
 
     def load_insert(self, matches_ids):
@@ -176,5 +174,5 @@ class MatchLoader():
 
 
 loader = MatchLoader()
-loader.update_ids(last_id=99999999999, n_first_pages=1)
+loader.update_ids(last_id=99999999999, n_first_pages=10)
 loader.load_new_matches(n_batches=8)
