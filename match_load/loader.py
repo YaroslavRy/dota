@@ -24,7 +24,7 @@ class MatchLoader():
                            {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 '
                                           '(KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36'},
                            ]
-        self.STEAM_API_KEY = '28E3FBFDBF38C8BB4F89F08C6CEB2275'
+        self.STEAM_API_KEY = ''
 
     def get_working_proxy(self, top_n=15):
         user_agent = np.random.choice(self.user_agent, size=1)[0]
